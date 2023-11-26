@@ -1,6 +1,8 @@
 import gradio as gr
 import cohere
 
+
+
 def chat(message):
     co = cohere.Client('Gx29SVN2CnTY3yZtqJQEYwgfQpSlN6m11yMU1mpF')
 

@@ -1,8 +1,8 @@
 import cohere
+import hnswlib
+import json
 
 from typing import List, Dict
-
-co = cohere.Client("YOUR_API_KEY")
 
 class Documents:
     """
@@ -28,7 +28,8 @@ class Documents:
 
     """
 
-    def __init__(self, sources: List[Dict[str, str]]):
+    def __init__(self, sources: List[Dict[str, str]], co: cohere.Client):
+        self.co = co
         self.sources = sources
         self.docs = []
         self.docs_embs = []
@@ -47,9 +48,10 @@ class Documents:
         for source in self.sources:
             id = source["publication_number"]
             text = source["abstract_localized.text"] + source["claims_localized.text"] + source["description_localized.text"]
+
             self.docs.append(
                 {
-                    "title": source["title"],
+                    "publication_number": id,
                     "text": text
                 }
             )
@@ -66,7 +68,7 @@ class Documents:
         for i in range(0, self.docs_len, batch_size):
             batch = self.docs[i : min(i + batch_size, self.docs_len)]
             texts = [item["text"] for item in batch]
-            docs_embs_batch = co.embed(
+            docs_embs_batch = self.co.embed(
                 texts=texts, model="embed-english-v3.0", input_type="search_document"
             ).embeddings
             self.docs_embs.extend(docs_embs_batch)
@@ -94,7 +96,7 @@ class Documents:
         List[Dict[str, str]]: A list of dictionaries representing the retrieved documents, with 'title', 'text', and 'url' keys.
         """
         docs_retrieved = []
-        query_emb = co.embed(
+        query_emb = self.co.embed(
             texts=[query], model="embed-english-v3.0", input_type="search_query"
         ).embeddings
 
@@ -104,7 +106,7 @@ class Documents:
         for doc_id in doc_ids:
             docs_to_rerank.append(self.docs[doc_id]["text"])
 
-        rerank_results = co.rerank(
+        rerank_results = self.co.rerank(
             query=query,
             documents=docs_to_rerank,
             top_n=self.rerank_top_k,
@@ -118,9 +120,8 @@ class Documents:
         for doc_id in doc_ids_reranked:
             docs_retrieved.append(
                 {
-                    "title": self.docs[doc_id]["title"],
-                    "text": self.docs[doc_id]["text"],
-                    "url": self.docs[doc_id]["url"],
+                    "publication_number": self.docs[doc_id]["id"],
+                    "text": self.docs[doc_id]["text"]        
                 }
             )
 
