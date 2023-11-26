@@ -8,7 +8,7 @@ def chat(message):
 
     response = co.chat(
 	message, 
-	model="command", 
+	model="command-nightly", 
 	temperature=0.9)
 
     answer = response.text
