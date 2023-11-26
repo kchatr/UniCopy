@@ -10,6 +10,18 @@ import apscheduler
 from apscheduler.schedulers.background import BackgroundScheduler
 from pytz import timezone
 
+import cohere
+from documents import Documents
+from chatbot import Chatbot
+from preprocessing import get_sources
+
+co = cohere.Client("Gx29SVN2CnTY3yZtqJQEYwgfQpSlN6m11yMU1mpF")
+
+sources = get_sources()
+
+documents = Documents(sources, co)
+
+chatbot = Chatbot(documents, co)
 
 # api_key = 'OTKHLLKZ9SXFZUHP'
 api_key = 'DNWQMLFC43J1PHDI'
@@ -27,7 +39,8 @@ main = Blueprint('main', __name__)
 def get_response():
     # Assuming you want to process the input text in some way
     input_text = request.json['text']
-    processed_text = input_text  # Example processing, you can customize this
+    chatbot_response = chatbot.generate_response(input_text)
+    processed_text = chatbot_response.text  # Example processing, you can customize this
     return jsonify({'result': processed_text})
 
   
