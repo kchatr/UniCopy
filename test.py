@@ -36,9 +36,6 @@ while True:
     # Print the chatbot response
     print("Chatbot:")
     flag = False
-    for event in response:
-        # Text
-        if event.event_type == "text-generation":
-            print(event.text, end="")
+    print(response.text)
 
     print(f"\n{'-'*100}\n")

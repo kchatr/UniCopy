@@ -54,21 +54,22 @@ class Chatbot:
                 message=message,
                 documents=documents,
                 conversation_id=self.conversation_id,
-                stream=True,
                 prompt_truncation='AUTO'
             )
-            for event in response:
-                yield event
+            # for event in response:
+            #     yield event
+
+            return response
 
         # If there is no search query, directly respond
         else:
             response = self.co.chat(
                 message=message, 
                 conversation_id=self.conversation_id, 
-                stream=True
+                stream=False
             )
-            for event in response:
-                yield event
+            # for event in response:
+            #     yield event
 
     def retrieve_docs(self, response) -> List[Dict[str, str]]:
         """
@@ -90,11 +91,5 @@ class Chatbot:
         retrieved_docs = []
         for query in queries:
             retrieved_docs.extend(self.docs.retrieve(query))
-
-        # Uncomment this code block to display the chatbot's retrieved documents
-        print("DOCUMENTS RETRIEVED:")
-        for idx, doc in enumerate(retrieved_docs):
-            print(f"doc_{idx}: {doc['publication_number']}")
-        print("\n")
 
         return retrieved_docs
