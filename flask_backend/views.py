@@ -39,9 +39,22 @@ main = Blueprint('main', __name__)
 def get_response():
     # Assuming you want to process the input text in some way
     input_text = request.json['text']
-    chatbot_response = chatbot.generate_response(input_text)
+
+    prompt = f"""
+        Below is a patent idea. Please provide any patents that are the most similar or contain similar topics.
+
+        {input_text}
+
+        For any patents used, please provide the corresponding patent number.
+    """
+
+    chatbot_response = chatbot.generate_response(prompt)
     processed_text = chatbot_response.text  # Example processing, you can customize this
     return jsonify({'result': processed_text})
+
+# def get_responses():
+#     input_text = request.json['text']
+#     return jsonify({'result':input_text})
 
   
     

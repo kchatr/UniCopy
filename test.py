@@ -1,6 +1,6 @@
-from documents import Documents
+from flask_backend.documents import Documents
 from chatbot import Chatbot
-from preprocessing import get_sources
+from flask_backend.preprocessing import get_sources
 
 import cohere
 import json
