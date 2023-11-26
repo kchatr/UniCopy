@@ -61,7 +61,6 @@ class Documents:
 
             chunks = text_splitter.split_text(text)
             for chunk in chunks:
-                print(type(chunk))
                 self.docs.append(
                     {
                         "publication_number": source["publication_number"],

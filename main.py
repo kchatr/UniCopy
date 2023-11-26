@@ -1,17 +1,27 @@
 import gradio as gr
 import cohere
 
+from documents import Documents
+from chatbot import Chatbot
+from preprocessing import get_sources
 
+co = cohere.Client("Gx29SVN2CnTY3yZtqJQEYwgfQpSlN6m11yMU1mpF")
+
+sources = get_sources()
+
+documents = Documents(sources, co)
+
+chatbot = Chatbot(documents, co)
 
 def chat(message):
-    co = cohere.Client('Gx29SVN2CnTY3yZtqJQEYwgfQpSlN6m11yMU1mpF')
-
     response = co.chat(
 	message, 
 	model="command-nightly", 
 	temperature=0.9)
 
-    answer = response.text
+    for event in response:
+        if event.event_type == "text-generation":
+            answer = event.text
 
     return answer
 
