@@ -29,7 +29,7 @@ function App() {
       <div className='p-20'>
 
         <Box pl={10} fontSize={30}>
-          <p >PatentCheck</p>
+          <p >UniCopy</p>
         </Box>
         
       
