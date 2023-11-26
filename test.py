@@ -1,19 +1,17 @@
 from documents import Documents
 from chatbot import Chatbot
+from preprocessing import get_sources
 
 import cohere
 import json
 
-json_file_path = 'patents.json'
+co = cohere.Client("Gx29SVN2CnTY3yZtqJQEYwgfQpSlN6m11yMU1mpF")
 
-co = cohere.Client('Gx29SVN2CnTY3yZtqJQEYwgfQpSlN6m11yMU1mpF')
-with open(json_file_path, 'r') as f:
-    sources = json.load(f)
-    print(type(sources))
+sources = get_sources()
 
 documents = Documents(sources, co)
 
-chatbot = Chatbot(documents)
+chatbot = Chatbot(documents, co)
 
 while True:
     # Get the user message
@@ -26,8 +24,14 @@ while True:
     else:
         print(f"User: {message}")
 
+    prompt = f"""
+    {message}
+
+    For any queries regarding the patent, please output the patent number corresponding to citations.
+    """
+
     # Get the chatbot response
-    response = chatbot.generate_response(message)
+    response = chatbot.generate_response(prompt)
 
     # Print the chatbot response
     print("Chatbot:")
@@ -36,12 +40,5 @@ while True:
         # Text
         if event.event_type == "text-generation":
             print(event.text, end="")
-
-        # Citations
-        if event.event_type == "citation-generation":
-            if not flag:
-                print("\n\nCITATIONS:")
-                flag = True
-            print(event.citations)
 
     print(f"\n{'-'*100}\n")

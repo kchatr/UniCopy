@@ -5,8 +5,6 @@ import os
 from typing import List, Dict
 from documents import Documents
 
-co = cohere.Client("YOUR_API_KEY")
-
 class Chatbot:
     """
     A class representing a chatbot.
@@ -24,8 +22,9 @@ class Chatbot:
 
     """
 
-    def __init__(self, docs: Documents):
+    def __init__(self, docs: Documents, co: cohere.Client):
         self.docs = docs
+        self.co = co
         self.conversation_id = str(uuid.uuid4())
 
     def generate_response(self, message: str):
@@ -43,7 +42,7 @@ class Chatbot:
 
         """
         # Generate search queries (if any)
-        response = co.chat(message=message, search_queries_only=True)
+        response = self.co.chat(message=message, search_queries_only=True)
 
         # If there are search queries, retrieve documents and respond
         if response.search_queries:
@@ -51,18 +50,19 @@ class Chatbot:
 
             documents = self.retrieve_docs(response)
 
-            response = co.chat(
+            response = self.co.chat(
                 message=message,
                 documents=documents,
                 conversation_id=self.conversation_id,
                 stream=True,
+                prompt_truncation='AUTO'
             )
             for event in response:
                 yield event
 
         # If there is no search query, directly respond
         else:
-            response = co.chat(
+            response = self.co.chat(
                 message=message, 
                 conversation_id=self.conversation_id, 
                 stream=True
@@ -91,10 +91,10 @@ class Chatbot:
         for query in queries:
             retrieved_docs.extend(self.docs.retrieve(query))
 
-        # # Uncomment this code block to display the chatbot's retrieved documents
-        # print("DOCUMENTS RETRIEVED:")
-        # for idx, doc in enumerate(retrieved_docs):
-        #     print(f"doc_{idx}: {doc}")
-        # print("\n")
+        # Uncomment this code block to display the chatbot's retrieved documents
+        print("DOCUMENTS RETRIEVED:")
+        for idx, doc in enumerate(retrieved_docs):
+            print(f"doc_{idx}: {doc['publication_number']}")
+        print("\n")
 
         return retrieved_docs

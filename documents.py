@@ -52,19 +52,20 @@ class Documents:
             
             text_splitter = CharacterTextSplitter(
                 separator = "\n\n",
-                chunk_size = 1000,
-                chunk_overlap  = 200,
+                chunk_size = 200,
+                chunk_overlap  = 50,
                 length_function = len,
                 is_separator_regex = False,
             )
 
 
-            chunks = text_splitter.create_documents(text)
+            chunks = text_splitter.split_text(text)
             for chunk in chunks:
+                print(type(chunk))
                 self.docs.append(
                     {
-                        "title": source["title"],
-                        "text": chunk["page_content"]
+                        "publication_number": source["publication_number"],
+                        "text": chunk
                     }
                 )
 
@@ -132,9 +133,11 @@ class Documents:
         for doc_id in doc_ids_reranked:
             docs_retrieved.append(
                 {
-                    "publication_number": self.docs[doc_id]["id"],
+                    "publication_number": self.docs[doc_id]["publication_number"],
                     "text": self.docs[doc_id]["text"]        
                 }
             )
+
+        print(f"Retrieved {len(docs_retrieved)} documents.")
 
         return docs_retrieved
