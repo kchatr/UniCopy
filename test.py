@@ -9,6 +9,7 @@ json_file_path = 'patents.json'
 co = cohere.Client('Gx29SVN2CnTY3yZtqJQEYwgfQpSlN6m11yMU1mpF')
 with open(json_file_path, 'r') as f:
     sources = json.load(f)
+    print(type(sources))
 
 documents = Documents(sources, co)
 

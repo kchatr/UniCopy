@@ -1,6 +1,7 @@
 import cohere
 import hnswlib
 import json
+from langchain.text_splitter import CharacterTextSplitter
 
 from typing import List, Dict
 
@@ -48,13 +49,24 @@ class Documents:
         for source in self.sources:
             id = source["publication_number"]
             text = source["abstract_localized.text"] + source["claims_localized.text"] + source["description_localized.text"]
-
-            self.docs.append(
-                {
-                    "publication_number": id,
-                    "text": text
-                }
+            
+            text_splitter = CharacterTextSplitter(
+                separator = "\n\n",
+                chunk_size = 1000,
+                chunk_overlap  = 200,
+                length_function = len,
+                is_separator_regex = False,
             )
+
+
+            chunks = text_splitter.create_documents(text)
+            for chunk in chunks:
+                self.docs.append(
+                    {
+                        "title": source["title"],
+                        "text": chunk["page_content"]
+                    }
+                )
 
     def embed(self) -> None:
         """
