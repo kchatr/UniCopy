@@ -28,6 +28,10 @@ function App() {
     <div className="App">
       <div className='p-20'>
 
+        <Box pl={10} fontSize={30}>
+          <p >PatentCheck</p>
+        </Box>
+        
       
         <Box className='p-20 w-full' p={10} >
           <TextField 
@@ -44,10 +48,9 @@ function App() {
         </Box>
         <Box pl={10}>
           <Button className='text-white p-10'  style={{
-        borderRadius: 35,
-        backgroundColor: "#b1eeff",
-        padding: "18px 36px",
-        fontSize: "18px"
+        backgroundColor: "#2551da",
+        fontSize: "18px",
+        color:"#FFFFFF"
         
     }} onClick={handleSubmit}>Submit</Button>
         </Box>
@@ -55,9 +58,9 @@ function App() {
         <Box className='p-20 w-full' p={10}>
           <TextField 
             id="outlined-multiline-flexible"
-            label="Processed Text"
+            label="Other Similar Patents"
             multiline
-            maxRows={4}
+            maxRows={8}
             className='w-full'
             value={outputText}
             readOnly
